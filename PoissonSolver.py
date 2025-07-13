@@ -5,7 +5,6 @@ import math
 Nx,Ny = 0
 dx,dy = 0
 dA = dx*dy
-dx_negsqr = 1/dx/dx, dy_negsqr = 1/dy/dy, one_over_dA = 1/dA
 
 
 def error(Res,psi,zeta): 
@@ -22,8 +21,8 @@ def Jacobi(field, init_guess, tol, plot=False):
     zeta = np.copy(field)
     psi_now = np.copy(init_guess); psi_next = np.zeros((Nx+2,Ny+2))
 
-    Res[1:Nx-1,1:Ny-1] = dx_negsqr*(psi_now[0:Nx-2,1:Ny-1]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[2:Nx,1:Ny-1])+dy_negsqr*(psi_now[1:Nx-1,0:Ny-2]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[1:Nx-1,2:Ny])-zeta[1:Nx-1,1:Ny-1]
-    psi_next[1:Nx-1,1:Ny-1] = psi_now[1:Nx-1,1:Ny-1]+(Res[1:Nx-1,1:Ny-1])*one_over_dA
+    Res[1:Nx-1,1:Ny-1] = (1/dx/dx)*(psi_now[0:Nx-2,1:Ny-1]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[2:Nx,1:Ny-1])+(1/dy/dy)*(psi_now[1:Nx-1,0:Ny-2]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[1:Nx-1,2:Ny])-zeta[1:Nx-1,1:Ny-1]
+    psi_next[1:Nx-1,1:Ny-1] = psi_now[1:Nx-1,1:Ny-1]+(Res[1:Nx-1,1:Ny-1])*(1/dA)
 
     psi_now = psi_next
 
@@ -35,8 +34,8 @@ def Jacobi(field, init_guess, tol, plot=False):
         plt.draw()
 
     while(error(Res,psi_now,zeta)>tol):
-        Res[1:Nx-1,1:Ny-1] = dx_negsqr*(psi_now[0:Nx-2,1:Ny-1]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[2:Nx,1:Ny-1])+dy_negsqr*(psi_now[1:Nx-1,0:Ny-2]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[1:Nx-1,2:Ny])-zeta[1:Nx-1,1:Ny-1]
-        psi_next[1:Nx-1,1:Ny-1] = psi_now[1:Nx-1,1:Ny-1]+(Res[1:Nx-1,1:Ny-1])*one_over_dA
+        Res[1:Nx-1,1:Ny-1] = (1/dx/dx)*(psi_now[0:Nx-2,1:Ny-1]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[2:Nx,1:Ny-1])+(1/dy/dy)*(psi_now[1:Nx-1,0:Ny-2]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[1:Nx-1,2:Ny])-zeta[1:Nx-1,1:Ny-1]
+        psi_next[1:Nx-1,1:Ny-1] = psi_now[1:Nx-1,1:Ny-1]+(Res[1:Nx-1,1:Ny-1])*(1/dA)
 
         psi_now = psi_next
 
@@ -68,7 +67,7 @@ def GaussSeidel(field,initGuess, tol, plot=False):
     psi_now[Nx-1,:] = 0
     
     Res = np.zeros((Nx,Ny))
-    Res[1:Nx-1,1:Ny-1] = dx_negsqr*(psi_now[0:Nx-2,1:Ny-1]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[2:Nx,1:Ny-1])+dy_negsqr*(psi_now[1:Nx-1,0:Ny-2]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[1:Nx-1,2:Ny])-zeta[1:Nx-1,1:Ny-1]
+    Res[1:Nx-1,1:Ny-1] = (1/dx/dx)*(psi_now[0:Nx-2,1:Ny-1]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[2:Nx,1:Ny-1])+(1/dy/dy)*(psi_now[1:Nx-1,0:Ny-2]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[1:Nx-1,2:Ny])-zeta[1:Nx-1,1:Ny-1]
 
     if(plot):
         fig, ax = plt.subplots()
@@ -80,15 +79,15 @@ def GaussSeidel(field,initGuess, tol, plot=False):
     for t in range(1):
         for i in range(1,Nx-1):
             for j in range(1,Ny-1):
-                Res[i,j] = dx_negsqr*(psi_now[i+1,j]-2*psi_now[i,j]+psi_now[i-1,j])+dy_negsqr*(psi_now[i,j+1]-2*psi_now[i,j]+psi_now[i,j-1])-zeta[i,j]
-                psi_now[i,j] = psi_now[i,j]+alpha*one_over_dA*(Res[i,j]) 
+                Res[i,j] = (1/dx/dx)*(psi_now[i+1,j]-2*psi_now[i,j]+psi_now[i-1,j])+(1/dy/dy)*(psi_now[i,j+1]-2*psi_now[i,j]+psi_now[i,j-1])-zeta[i,j]
+                psi_now[i,j] = psi_now[i,j]+alpha*(1/dA)*(Res[i,j]) 
         count+=1
     
     while(error(Res,psi_now,zeta)>tol):
         for i in range(1,Nx-1):
             for j in range(1,Ny-1):
-                Res[i,j] = dx_negsqr*(psi_now[i+1,j]-2*psi_now[i,j]+psi_now[i-1,j])+dy_negsqr*(psi_now[i,j+1]-2*psi_now[i,j]+psi_now[i,j-1])-zeta[i,j]
-                psi_now[i,j] = psi_now[i,j]+1*one_over_dA*(Res[i,j]) 
+                Res[i,j] = (1/dx/dx)*(psi_now[i+1,j]-2*psi_now[i,j]+psi_now[i-1,j])+(1/dy/dy)*(psi_now[i,j+1]-2*psi_now[i,j]+psi_now[i,j-1])-zeta[i,j]
+                psi_now[i,j] = psi_now[i,j]+1*(1/dA)*(Res[i,j]) 
 
         count += 1
         
@@ -119,7 +118,7 @@ def SOR(field,initGuess, tol, plot=False):
     psi_now[Nx-1,:] = 0
     
     Res = np.zeros((Nx,Ny))
-    Res[1:Nx-1,1:Ny-1] = dx_negsqr*(psi_now[0:Nx-2,1:Ny-1]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[2:Nx,1:Ny-1])+dy_negsqr*(psi_now[1:Nx-1,0:Ny-2]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[1:Nx-1,2:Ny])-zeta[1:Nx-1,1:Ny-1]
+    Res[1:Nx-1,1:Ny-1] = (1/dx/dx)*(psi_now[0:Nx-2,1:Ny-1]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[2:Nx,1:Ny-1])+(1/dy/dy)*(psi_now[1:Nx-1,0:Ny-2]-2*psi_now[1:Nx-1,1:Ny-1]+psi_now[1:Nx-1,2:Ny])-zeta[1:Nx-1,1:Ny-1]
 
     if(plot):
         fig, ax = plt.subplots()
@@ -131,15 +130,15 @@ def SOR(field,initGuess, tol, plot=False):
     for t in range(1):
         for i in range(1,Nx-1):
             for j in range(1,Ny-1):
-                Res[i,j] = dx_negsqr*(psi_now[i+1,j]-2*psi_now[i,j]+psi_now[i-1,j])+dy_negsqr*(psi_now[i,j+1]-2*psi_now[i,j]+psi_now[i,j-1])-zeta[i,j]
-                psi_now[i,j] = psi_now[i,j]+alpha*one_over_dA*(Res[i,j]) 
+                Res[i,j] = (1/dx/dx)*(psi_now[i+1,j]-2*psi_now[i,j]+psi_now[i-1,j])+(1/dy/dy)*(psi_now[i,j+1]-2*psi_now[i,j]+psi_now[i,j-1])-zeta[i,j]
+                psi_now[i,j] = psi_now[i,j]+alpha*(1/dA)*(Res[i,j]) 
         count+=1
     
     while(error(Res,psi_now,zeta)>tol):
         for i in range(1,Nx-1):
             for j in range(1,Ny-1):
-                Res[i,j] = dx_negsqr*(psi_now[i+1,j]-2*psi_now[i,j]+psi_now[i-1,j])+dy_negsqr*(psi_now[i,j+1]-2*psi_now[i,j]+psi_now[i,j-1])-zeta[i,j]
-                psi_now[i,j] = psi_now[i,j]+alpha*one_over_dA*(Res[i,j]) 
+                Res[i,j] = (1/dx/dx)*(psi_now[i+1,j]-2*psi_now[i,j]+psi_now[i-1,j])+(1/dy/dy)*(psi_now[i,j+1]-2*psi_now[i,j]+psi_now[i,j-1])-zeta[i,j]
+                psi_now[i,j] = psi_now[i,j]+alpha*(1/dA)*(Res[i,j]) 
 
         count += 1
         
