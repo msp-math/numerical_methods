@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import math
 
 Nx,Ny = 0
-dx,dy,dA = 0
+dx,dy = 0
+dA = dx*dy
 dx_negsqr = 1/dx/dx, dy_negsqr = 1/dy/dy, one_over_dA = 1/dA
 
 
